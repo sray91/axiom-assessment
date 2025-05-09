@@ -11,8 +11,7 @@ export default function Navbar() {
   
   const navigation = [
     { name: 'Home', href: '/' },
-    { name: 'Assessment', href: '/assessment' },
-    { name: 'Admin', href: '/admin/benchmarks' }
+    { name: 'Assessment', href: '/assessment' }
   ];
   
   // Function to determine if a nav item is active
