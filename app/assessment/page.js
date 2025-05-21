@@ -9,6 +9,7 @@ import FinancialInputs from './components/FinancialInputs';
 import { calculateROI } from '../../lib/roi';
 import { createBrowserClient } from '../../lib/supabase';
 import Image from 'next/image';
+import ReportPreview from './components/ReportPreview';
 
 // Define maturity questions (SIRI-based)
 const MATURITY_QUESTIONS = [
@@ -309,79 +310,67 @@ export default function AssessmentPage() {
   };
   
   return (
-    <div className="container max-w-3xl mx-auto px-4 py-8">
-      <div className="flex flex-col items-center mb-8">
-        <Image 
-          src="/axiom-logo.png" 
-          alt="Axiom Logo" 
-          width={160} 
-          height={50} 
-          className="mb-4"
-          priority
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <ProgressTracker
+          steps={stepTitles}
+          currentStep={currentStep}
+          onStepClick={(step) => setCurrentStep(step)}
         />
-        <h1 className="text-3xl font-bold text-center">
-          Smart Manufacturing Assessment
-        </h1>
-      </div>
-      
-      <ProgressTracker
-        currentStep={currentStep}
-        totalSteps={stepTitles.length}
-        titles={stepTitles}
-      />
-      
-      <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
-        {renderStepContent()}
         
-        <div className="flex justify-between mt-8">
-          <button
-            type="button"
-            onClick={handleBack}
-            disabled={currentStep === 0}
-            className={`px-4 py-2 rounded-md font-medium
-              ${currentStep === 0
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
-              }`
-            }
-          >
-            Back
-          </button>
-          
-          {currentStep < stepTitles.length - 1 ? (
-            <button
-              type="button"
-              onClick={handleNext}
-              disabled={!isStepComplete()}
-              className={`px-4 py-2 rounded-md font-medium
-                ${!isStepComplete()
-                  ? 'bg-blue-300 text-white cursor-not-allowed'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-                }`
-              }
-            >
-              Next
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 flex items-center"
-            >
-              {loading ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Processing...
-                </>
-              ) : (
-                'Generate Roadmap'
-              )}
-            </button>
-          )}
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Assessment Content */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              {renderStepContent()}
+              
+              <div className="mt-6 flex justify-between">
+                {currentStep > 0 && (
+                  <button
+                    onClick={handleBack}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  >
+                    Back
+                  </button>
+                )}
+                
+                {currentStep < stepTitles.length - 1 ? (
+                  <button
+                    onClick={handleNext}
+                    disabled={!isStepComplete()}
+                    className={`ml-auto px-4 py-2 rounded-md text-white ${
+                      isStepComplete()
+                        ? 'bg-blue-600 hover:bg-blue-700'
+                        : 'bg-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    Next
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className={`ml-auto px-4 py-2 rounded-md text-white ${
+                      loading
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-blue-600 hover:bg-blue-700'
+                    }`}
+                  >
+                    {loading ? 'Submitting...' : 'Submit Assessment'}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Report Preview Pane */}
+          <div className="lg:col-span-1">
+            <ReportPreview
+              assessment={assessment}
+              benchmarks={benchmarks}
+              technologies={technologies}
+            />
+          </div>
         </div>
       </div>
     </div>
