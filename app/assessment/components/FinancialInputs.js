@@ -16,6 +16,27 @@ export default function FinancialInputs({ value = {}, onChange }) {
       });
     }
   };
+
+  const handleUnitChange = (e) => {
+    const { value: newUnit } = e.target;
+    if (onChange) {
+      onChange({
+        ...value,
+        time_unit: newUnit
+      });
+    }
+  };
+
+  const getUnitLabel = () => {
+    switch (value.time_unit) {
+      case 'days':
+        return 'days';
+      case 'shifts':
+        return 'shifts';
+      default:
+        return 'hrs';
+    }
+  };
   
   return (
     <div className="my-6 bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -58,7 +79,23 @@ export default function FinancialInputs({ value = {}, onChange }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Annual Production Hours
+                  Time Unit
+                </label>
+                <select
+                  name="time_unit"
+                  value={value.time_unit || 'hrs'}
+                  onChange={handleUnitChange}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="hrs">Hours</option>
+                  <option value="shifts">Shifts</option>
+                  <option value="days">Days</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Annual Production {value.time_unit === 'shifts' ? 'Shifts' : value.time_unit === 'days' ? 'Days' : 'Hours'}
                 </label>
                 <div className="relative">
                   <input
@@ -70,7 +107,7 @@ export default function FinancialInputs({ value = {}, onChange }) {
                     placeholder="0"
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 sm:text-sm">hrs</span>
+                    <span className="text-gray-500 sm:text-sm">{getUnitLabel()}</span>
                   </div>
                 </div>
               </div>
@@ -89,14 +126,14 @@ export default function FinancialInputs({ value = {}, onChange }) {
                     placeholder="0"
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 sm:text-sm">hrs</span>
+                    <span className="text-gray-500 sm:text-sm">{getUnitLabel()}</span>
                   </div>
                 </div>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Cost per Downtime Hour
+                  Cost per Downtime {value.time_unit === 'shifts' ? 'Shift' : value.time_unit === 'days' ? 'Day' : 'Hour'}
                 </label>
                 <div className="relative">
                   <input

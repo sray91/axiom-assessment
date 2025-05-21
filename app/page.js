@@ -14,6 +14,17 @@ export default function HomePage() {
         </div>
         
         <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+          <div className="mb-8 text-center">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Who is this for?</h2>
+            <p className="text-lg text-gray-700 mb-4">
+              Designed for manufacturing leaders and decision-makers, this assessment tool helps you evaluate your current digital maturity and create a strategic roadmap for your Industry 4.0 journey.
+            </p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 mt-8">What will you get?</h2>
+            <p className="text-lg text-gray-700">
+              Whether you&apos;re just starting your digital transformation or looking to optimize existing smart manufacturing initiatives, this tool will help you identify opportunities, prioritize investments, and build a clear path to operational excellence.
+            </p>
+          </div>
+
           <div className="flex justify-center mb-6">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div className="text-center p-4">
