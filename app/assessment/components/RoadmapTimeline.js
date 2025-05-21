@@ -1,6 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
+import TechnologyPopup from './TechnologyPopup';
+import { createBrowserClient } from '../../../lib/supabase';
 
 // Mapping of technology names to emojis
 const TECH_EMOJIS = {
@@ -20,6 +23,10 @@ const TECH_EMOJIS = {
 const DEFAULT_EMOJI = '💻';
 
 export default function RoadmapTimeline({ roadmap = [] }) {
+  const [selectedTech, setSelectedTech] = useState(null);
+  const [techDetails, setTechDetails] = useState({});
+  const [loading, setLoading] = useState(false);
+
   // Animation variants for the timeline
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -38,6 +45,42 @@ export default function RoadmapTimeline({ roadmap = [] }) {
 
   // Get emoji for a technology
   const getEmoji = (tech) => TECH_EMOJIS[tech] || DEFAULT_EMOJI;
+
+  // Fetch technology details
+  const fetchTechDetails = async (techName) => {
+    try {
+      setLoading(true);
+      const supabase = createBrowserClient();
+      
+      const { data, error } = await supabase
+        .from('technologies')
+        .select('*')
+        .eq('name', techName)
+        .single();
+        
+      if (error) throw error;
+      
+      setTechDetails(prev => ({
+        ...prev,
+        [techName]: data
+      }));
+      
+      setSelectedTech(data);
+    } catch (error) {
+      console.error('Error fetching technology details:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle technology click
+  const handleTechClick = async (tech) => {
+    if (techDetails[tech]) {
+      setSelectedTech(techDetails[tech]);
+    } else {
+      await fetchTechDetails(tech);
+    }
+  };
 
   return (
     <div className="py-4">
@@ -78,15 +121,24 @@ export default function RoadmapTimeline({ roadmap = [] }) {
                       {getEmoji(tech)}
                     </span>
                   </div>
-                  <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 flex-1">
+                  <button
+                    onClick={() => handleTechClick(tech)}
+                    className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 flex-1 text-left hover:border-blue-500 transition-colors"
+                  >
                     <h3 className="font-medium text-gray-800">{tech}</h3>
-                  </div>
+                  </button>
                 </motion.div>
               ))}
             </div>
           </motion.div>
         ))}
       </motion.div>
+
+      {/* Technology Popup */}
+      <TechnologyPopup
+        technology={selectedTech}
+        onClose={() => setSelectedTech(null)}
+      />
     </div>
   );
 } 
